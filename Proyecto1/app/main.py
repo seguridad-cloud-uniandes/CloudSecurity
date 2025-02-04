@@ -16,3 +16,4 @@ app.include_router(tags_router)
 @app.get("/")
 def read_root():
     return {"message": "Bienvenido a la API del blog"}
+
