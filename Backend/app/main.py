@@ -12,18 +12,25 @@ app = FastAPI(
     version="1.0.0",
 )
 
+# Configuración de CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[ "https://pocblog-dev-alb-1155122966.us-east-1.elb.amazonaws.com",
-                    "https://pocblog-dev-alb-1155122966.us-east-1.elb.amazonaws.com:8443",
-                    "https://www.pocblog.com",
-                    "https://www.pocblog.com:8443",
-                    "http://pocblog-dev-alb-1155122966.us-east-1.elb.amazonaws.com",
-                    "http://www.pocblog.com"
-    ],  # Update to match frontend URL
+    allow_origins=[
+        "http://localhost:5173",
+        "http://localhost:8000",
+        "https://localhost:5173",
+        "http://127.0.0.1:5173",
+        "https://pocblog-dev-alb-1155122966.us-east-1.elb.amazonaws.com",
+        "https://pocblog-dev-alb-1155122966.us-east-1.elb.amazonaws.com:8443",
+        "https://internal-pocblog-dev-internal-alb-840753503.us-east-1.elb.amazonaws.com:8443",
+        "https://www.pocblog.com",
+        "https://www.pocblog.com:8443",
+        "http://pocblog-dev-alb-1155122966.us-east-1.elb.amazonaws.com",
+        "http://www.pocblog.com"
+    ],
     allow_credentials=True,
-    allow_methods=["*"],  # Allow all methods including OPTIONS
-    allow_headers=["*"],  # Allow all headers
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 # 🔹 Incluye todas las rutas correctamente

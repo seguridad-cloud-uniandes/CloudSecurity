@@ -1,6 +1,6 @@
 // src/pages/HomePage.tsx
 import React, { useEffect, useState } from 'react';
-import { fetchPublishedPosts, deletePost, submitRating } from '../api';
+import { fetchPublishedPosts, deletePost, submitRating, fetchAllTags } from '../api';
 import RatingStars from '../components/RatingStars';
 import InteractiveRatingStars from '../components/InteractiveRatingStars';
 
@@ -32,8 +32,7 @@ const HomePage: React.FC = () => {
   useEffect(() => {
     const fetchTags = async () => {
       try {
-        const response = await fetch('https://pocblog-dev-alb-1155122966.us-east-1.elb.amazonaws.com:8443/tags/tags');
-        const tagData = await response.json();
+        const tagData = await fetchAllTags();
         setTags(tagData);
       } catch (error) {
         console.error('❌ Failed to fetch tags:', error);

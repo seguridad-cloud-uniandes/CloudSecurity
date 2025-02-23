@@ -1,19 +1,19 @@
-import { Routes, Route } from "react-router-dom";
-import HomePage from "../pages/HomePage";
-import PostPage from "../pages/PostPage";
-import LoginPage from "../pages/LoginPage";
-import RegisterPage from "../pages/RegisterPage";
-import CreatePostPage from "../pages/CreatePostPage";
-import EditPostPage from "../pages/EditPostPage";
-import NotFound from "../pages/NotFound";
-import Navbar from "../components/Navbar";
-import Footer from "../components/Footer";
-import MyPostsPage from "../pages/MyPostsPage";
-import EditPublishedPostPage from "../pages/EditPublishedPostPage";
-import ProtectedRoute from "../components/ProtectedRoute";
-import CreateTagPage from "../pages/CreateTagPage";
-import RequestPasswordResetPage from "../pages/RequestPasswordResetPage";
-import ResetPasswordPage from "../pages/ResetPasswordPage";
+import { Routes, Route } from 'react-router-dom';
+import HomePage from '../pages/HomePage';
+import PostPage from '../pages/PostPage';
+import LoginPage from '../pages/LoginPage';
+import RegisterPage from '../pages/RegisterPage';
+import CreatePostPage from '../pages/CreatePostPage';
+import EditPostPage from '../pages/EditPostPage';
+import NotFound from '../pages/NotFound';
+import Navbar from '../components/Navbar';
+import Footer from '../components/Footer';
+import MyPostsPage from '../pages/MyPostsPage';
+import EditPublishedPostPage from '../pages/EditPublishedPostPage';
+import ProtectedRoute from '../components/ProtectedRoute';
+import CreateTagPage from '../pages/CreateTagPage';
+import RequestPasswordResetPage from '../pages/RequestPasswordResetPage';
+import ResetPasswordPage from '../pages/ResetPasswordPage';
 
 const AppRouter = () => {
   return (
@@ -21,13 +21,18 @@ const AppRouter = () => {
       <Navbar />
       <main className="container mx-auto px-4 py-6">
         <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/post/:id" element={<PostPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
-          {/* Rutas públicas para reseteo de contraseña */}
           <Route path="/request-password-reset" element={<RequestPasswordResetPage />} />
           <Route path="/reset-password" element={<ResetPasswordPage />} />
+          <Route
+            path="/"
+            element={
+              <ProtectedRoute>
+                <HomePage />
+              </ProtectedRoute>
+            }
+          />
           <Route
             path="/my-posts"
             element={
@@ -49,6 +54,14 @@ const AppRouter = () => {
             element={
               <ProtectedRoute>
                 <EditPostPage />
+              </ProtectedRoute>
+            }
+            />
+            <Route
+            path="/post/:id"
+            element={
+              <ProtectedRoute>
+                <PostPage />
               </ProtectedRoute>
             }
           />

@@ -11,7 +11,7 @@ from passlib.context import CryptContext
 import os
 
 # Secret key (debe guardarse en variables de entorno en producción)
-SECRET_KEY = "your_secret_key_here"
+SECRET_KEY = "security_blog_secret_key"
 ALGORITHM = "HS256"
 RESET_TOKEN_EXPIRE_MINUTES = 15  # Expiración del token de reseteo en 15 minutos
 
