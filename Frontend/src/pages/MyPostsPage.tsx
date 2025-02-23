@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { fetchUserDraftPosts, deletePost } from '../api';
+import { fetchUserDraftPosts, deletePost, fetchAllTags } from '../api';
 
 const MyPostsPage: React.FC = () => {
   const [allDrafts, setAllDrafts] = useState<any[]>([]);
@@ -39,12 +39,10 @@ const MyPostsPage: React.FC = () => {
     getDraftPosts();
   }, []);
 
-  // Obtener etiquetas
   useEffect(() => {
     const fetchTags = async () => {
       try {
-        const response = await fetch('https://pocblog-dev-alb-1155122966.us-east-1.elb.amazonaws.com:8443/tags/tags');
-        const tagData = await response.json();
+        const tagData = await fetchAllTags();
         setTags(tagData);
       } catch (error) {
         console.error('❌ Failed to fetch tags:', error);

@@ -6,13 +6,15 @@ import axios from "axios";
 // Usa la variable de entorno o un valor por defecto
 export const API_URL = import.meta.env.VITE_API_BASE_URL || "https://backend:8000";
 
-// Axios instance
+//export const API_URL = "/backend";
+
 const api = axios.create({
   baseURL: API_URL,
   headers: {
     "Content-Type": "application/json",
   },
 });
+
 
 // ✅ Automatically attach token to every request
 api.interceptors.request.use((config) => {

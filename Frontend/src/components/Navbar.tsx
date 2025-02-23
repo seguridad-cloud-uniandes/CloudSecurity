@@ -1,40 +1,53 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import api from '../api';
+import { fetchAllTags } from '../api'; 
 
 const Navbar = () => {
   const navigate = useNavigate();
-  const location = useLocation(); // Obtén la ruta actual
+  const location = useLocation();
   const [tags, setTags] = useState([]);
+  const [isAuthenticated, setIsAuthenticated] = useState(!!localStorage.getItem("token"));
 
   useEffect(() => {
     const fetchTags = async () => {
-      try {
-        const response = await api.get('/tags/tags');
-        setTags(response.data);
-      } catch (err) {
-        console.error('Failed to fetch tags:', err);
-      }
+      const tagData = await fetchAllTags();
+      // Filtrar para quitar tags cuyo nombre sea "None"
+      setTags(tagData.filter(tag => tag.name !== 'None'));
     };
-    fetchTags();
-  }, []);
+
+    if (location.pathname === "/create-tag") {
+      fetchTags();
+    }
+  }, [location.pathname]);
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    setIsAuthenticated(!!token);
+  }, [location.pathname]);
 
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user_id");
+    setIsAuthenticated(false);
     navigate("/login");
   };
 
-  const isAuthenticated = localStorage.getItem("token");
+  const handleLogoClick = () => {
+    if (isAuthenticated) {
+      navigate("/");
+    } else {
+      navigate("/login");
+    }
+  };
 
   return (
     <nav className="bg-blue-800 text-white p-4 flex flex-col gap-4">
       <div className="flex justify-between items-center">
-        <Link to="/" className="text-xl font-bold hover:text-blue-300">
+        <button onClick={handleLogoClick} className="text-xl font-bold hover:text-blue-300">
           🔐 Cloud Security Blog
-        </Link>
+        </button>
         <div className="flex gap-4">
-          <Link to="/" className="hover:text-blue-300">Home</Link>
+          {isAuthenticated && <Link to="/" className="hover:text-blue-300">Home</Link>}
           {isAuthenticated && <Link to="/my-posts" className="hover:text-blue-300">My Posts</Link>}
           {isAuthenticated && <Link to="/create-post" className="hover:text-blue-300">New Post</Link>}
           {isAuthenticated && <Link to="/create-tag" className="hover:text-blue-300">Create Tag</Link>}
@@ -56,7 +69,7 @@ const Navbar = () => {
                 <li key={tag.id}>#{tag.name}</li>
               ))
             ) : (
-              <li>No tags available.</li>
+              <li>No tags available</li>
             )}
           </ul>
         </div>

@@ -12,7 +12,7 @@ function App() {
       <AppRouter />
       <ToastContainer 
         toastClassName="blue-toast"  // Clase personalizada para los toasts
-        hideProgressBar            // Oculta la barra de progreso
+        //hideProgressBar            // Oculta la barra de progreso
         position="top-center"        // Posición superior centrada
         autoClose={5000}             // Se cierra automáticamente en 5 segundos
       />
