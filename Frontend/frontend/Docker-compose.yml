@@ -1,0 +1,29 @@
+version: "3.8"
+
+services:
+  backend:
+    container_name: my-backend
+    build:
+      context: ../Proyecto1
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"              # Expone el puerto 8000 al host
+    environment:
+      - SOME_BACKEND_ENV=some_value
+    # Si necesitas montar los certificados desde fuera (en caso de no copiarlos en la imagen):
+    # volumes:
+    #   - ./backend/cert.pem:/app/cert.pem
+    #   - ./backend/cert.key:/app/cert.key
+
+  frontend:
+    container_name: my-frontend
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:80"                # Sirve el frontend en http://localhost:3000
+    depends_on:
+      - backend
+    environment:
+      # Esta variable se inyectará en el build de Vite (import.meta.env.VITE_API_BASE_URL)
+      - VITE_API_BASE_URL=https://backend:8000
