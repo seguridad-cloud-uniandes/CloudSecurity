@@ -14,7 +14,7 @@ CloudSecurity
   - [Migraciones de Base de Datos](#migraciones-de-base-de-datos)
   - [Autenticación](#autenticación)
   - [Modelo de Datos](#modelo-de-datos)
-  - [Base de Datos](#base-de-datos)
+- [Base de datos](#base-de-datos)
 - [Frontend](#frontend)
   - [Instalación](#instalación-frontend)
   - [Componentes Principales](#componentes-principales)
@@ -35,6 +35,7 @@ Este repositorio contiene la configuración completa para la aplicación **Blog 
 - FastAPI
 - SQLAlchemy
 - Alembic
+- SQLAlchemy
 - PostgreSQL
 - JWT (JSON Web Tokens)
 - Passlib para el hashing de contraseñas
@@ -104,7 +105,7 @@ El sistema de autenticación se basa en **JWT (JSON Web Tokens)** con la librer�
 - **Rating**: Calificaciones que los usuarios dan a las publicaciones.
 - **post_tags**: Relación muchos a muchos entre publicaciones y etiquetas.
 
-### Database
+## Database
 Esta base de datos consta de seis tablas principales para un sistema de blog con usuarios, posts, etiquetas y calificaciones. Las relaciones y constraints se reflejan de la siguiente manera:
 
 - **users**: Almacena usuarios, con email y username únicos.
@@ -186,7 +187,7 @@ Relaciones
 
 - Foreign Keys 
   * posts_author_id_fkey: (author_id) -> users(id). 
-      Esto asegura que si se elimina un user, se podría restringir o anular la relación (dependiendo de la política de   borrado configurada). (La salida no muestra explícitamente la política ON DELETE.)
+    Esto asegura que si se elimina un user, se podría restringir o anular la relación (dependiendo de la política de   borrado configurada). (La salida no muestra explícitamente la política ON DELETE.)
 - Es Referenciado por 
   * post_tags.post_id_fkey: en la tabla post_tags, la columna post_id referencia posts(id).
   * ratings_post_id_fkey: en la tabla ratings, la columna post_id referencia posts(id).
@@ -300,8 +301,44 @@ No tiene referencias a otras tablas ni columnas adicionales.
 
 ---
 
+## Frontend
+### Requisitos
+- Node.js 18+
+- React 18+
+- TypeScript
+- TailwindCSS
+- React Router
+  
+### Instalación
+1. Navegar a la carpeta `Frontend`.
+2. Instalar dependencias:
+   ```bash
+   npm install
+   ```
+3. Ejecutar la aplicación:
+   ```bash
+   npm run dev
+   ```
 
- 
+### Componentes Principales
+- `Navbar`: Barra de navegación con autenticación.
+- `PostCard`: Tarjetas para mostrar publicaciones.
+- `InteractiveRatingStars`: Calificación de publicaciones.
+- `LoadingSpinner`: Indicador de carga.
+- `CustomQuill`: Editor de texto enriquecido con Quill.
+- 
+### Páginas
+- `LoginPage`: Inicio de sesión.
+- `CreatePostPage`: Creación de publicaciones.
+- `EditPostPage`: Edición de publicaciones.
+- `CreateTagPage`: Creación de etiquetas.
+- `MyPostsPage`: Listado de publicaciones propias.
+
+### Contexto
+El contexto de autenticación se maneja con **AuthContext** usando **React Context API**.
+
+
+
 
 
 
