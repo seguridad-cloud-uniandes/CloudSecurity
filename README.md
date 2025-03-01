@@ -7,42 +7,36 @@ CloudSecurity
 <!-- BEGIN_TF_DOCS -->
 Esta base de datos consta de seis tablas principales para un sistema de blog con usuarios, posts, etiquetas y calificaciones. Las relaciones y constraints se reflejan de la siguiente manera:
 
-- users: Almacena usuarios, con email y username únicos.
-- posts: Contiene la información de cada publicación y referencia a un autor (users).
-- tags: Define etiquetas únicas por nombre.
-- post_tags: Relación de muchos-a-muchos entre posts y tags.
-- ratings: Calificaciones de usuarios a posts, con restricción de una calificación única por post/usuario.
-- alembic_version: Tabla de control de versiones de migraciones.
+  * users: Almacena usuarios, con email y username únicos.
+  * posts: Contiene la información de cada publicación y referencia a un autor (users).
+  * tags: Define etiquetas únicas por nombre.
+  * post_tags: Relación de muchos-a-muchos entre posts y tags.
+  * ratings: Calificaciones de usuarios a posts, con restricción de una calificación única por post/usuario.
+  * alembic_version: Tabla de control de versiones de migraciones.
 
-- Relación principal:
+Relación principal:
   * Users 1:N Posts (un usuario puede tener muchos posts).
   * Users 1:N Ratings (un usuario puede dar muchas calificaciones).
   * Posts 1:N Ratings (un post puede tener muchas calificaciones).
   * Posts N:M Tags (vía post_tags).
-  
-- Integridad referencial:
+ 
+Integridad referencial:
   * Mantenida mediante Foreign Keys en posts, post_tags y ratings.
   * Evita la eliminación o inserción de registros que rompan la consistencia.
   * Se revisará la política de borrado para cada FK (por ejemplo, si al eliminar un user se deben eliminar sus posts o sus ratings).
 
-- Índices únicos: para evitar duplicados en campos críticos (users.email, users.username, etc.) y en relaciones (ratings(post_id, user_id)).
-  
-- Timestamps: created_at / updated_at no tienen default ni triggers automáticos por defecto en la definición de la tabla. Esto se suele manejar en la aplicación o con migraciones que establezcan defaults o triggers.
+Índices únicos: para evitar duplicados en campos críticos (users.email, users.username, etc.) y en relaciones (ratings(post_id, user_id)).
 
+Timestamps: created_at / updated_at no tienen default ni triggers automáticos por defecto en la definición de la tabla. Esto se suele manejar en la aplicación o con migraciones que establezcan defaults o triggers.
 
-## Requirements
+## Versión de la Base de Datos
 
-| Name | Version |
-|------|---------|
-| <a name="requirement_Motor PostgreSQL"></a> [Motor PostgreSQL(#requirement\_Motor PostgreSQL) | 14.15.0 |
-| <a name="requirement_Método de migraciones"></a> [Método de migraciones](#requirement\_Método de migraciones) | Alembic (indicada por la tabla alembic_version). |
-
-
-
+  * Motor: PostgreSQL 14.15
+  * Método de migraciones: Alembic (indicada por la tabla alembic_version).
 
 ## Tabla users
 
-- Propósito: Almacena la información principal de los usuarios del blog (credenciales, email, etc.).
+Propósito: Almacena la información principal de los usuarios del blog (credenciales, email, etc.).
 
 | Columna | Tipo | Nulabilidad | Default | Descripcion |
 |------|-------------|------|---------|:--------:|
@@ -53,24 +47,24 @@ Esta base de datos consta de seis tablas principales para un sistema de blog con
 | <a name="input_created_at"></a> [created_at](#input\_created_at) | timestamp without time zone | NOT NULL | (sin default) | Fecha/hora de creación del usuario (si se usa). |
 | <a name="password_reminder"></a> [password_reminder](#input\_password_reminder) | character varying(255) | NOT NULL | 'default reminder'::character varying | Campo extra para recordatorio de contraseña. |
 
-- Restricciones e Índices
+Restricciones e Índices
 
-  1.	PRIMARY KEY
-       * users_pkey: btree en (id).
-  2.	Únicos
-       * ix_users_email (UNIQUE): btree en (email).
-    	 * ix_users_username (UNIQUE): btree en (username).
-  3.	Índices adicionales
-       * ix_users_id: btree en (id) (redundante con la PK).
+- PRIMARY KEY
+  * users_pkey: btree en (id).
+- Únicos
+  * ix_users_email (UNIQUE): btree en (email).
+  * ix_users_username (UNIQUE): btree en (username).
+- Índices adicionales
+  * ix_users_id: btree en (id) (redundante con la PK).
 
-- Relaciones (Foreign Keys desde otras tablas)
+ Relaciones (Foreign Keys desde otras tablas)
 
-  •	posts.author_id_fkey: en la tabla posts, la columna author_id referencia users(id).
-  •	ratings.user_id_fkey: en la tabla ratings, la columna user_id referencia users(id).
+- posts.author_id_fkey: en la tabla posts, la columna author_id referencia users(id).
+- ratings.user_id_fkey: en la tabla ratings, la columna user_id referencia users(id).
 
   ## Tabla posts
 
-- Propósito: Almacena las publicaciones (posts) del blog.
+Propósito: Almacena las publicaciones (posts) del blog.
 
 | Columna | Tipo | Nulabilidad | Default | Descripcion |
 |------|-------------|------|---------|:--------:|
@@ -82,32 +76,32 @@ Esta base de datos consta de seis tablas principales para un sistema de blog con
 | <a name="updated_at"></a> [updated_at](#input\_updated_at) | timestamp without time zone | NOT NULL | (sin default) | Fecha/hora de última actualización. |
 | <a name="password_reminder"></a> [password_reminder](#input\_password_reminder) | boolean | NOT NULL | (sin default) | Indica si el post está publicado o no. |
 
-- Restricciones e Índices
+Restricciones e Índices
 
   1.	PRIMARY KEY
        * posts_pkey: btree en (id).
   2.	Índices adicionales
        * ix_posts_id: btree en (id) (redundante con la PK).
 
-- Relaciones
+Relaciones
 
-  •	Foreign Keys 
-    * posts_author_id_fkey: (author_id) -> users(id). 
+- Foreign Keys 
+  * posts_author_id_fkey: (author_id) -> users(id). 
       Esto asegura que si se elimina un user, se podría restringir o anular la relación (dependiendo de la política de   borrado configurada). (La salida no muestra explícitamente la política ON DELETE.)
-  •	Es Referenciado por 
-    * post_tags.post_id_fkey: en la tabla post_tags, la columna post_id referencia posts(id).
-    * ratings_post_id_fkey: en la tabla ratings, la columna post_id referencia posts(id).
+- Es Referenciado por 
+  * post_tags.post_id_fkey: en la tabla post_tags, la columna post_id referencia posts(id).
+  * ratings_post_id_fkey: en la tabla ratings, la columna post_id referencia posts(id).
  
 ## Tabla tags
 
-- Propósito: Almacena etiquetas (tags) para clasificar los posts.
+Propósito: Almacena etiquetas (tags) para clasificar los posts.
 
 | Columna | Tipo | Nulabilidad | Default | Descripcion |
 |------|-------------|------|---------|:--------:|
 | <a name="input_id"></a> [id](#input\_id) | integer | NOT NULL | nextval('tags_id_seq'::regclass) | Identificador único (PK). |
 | <a name="input_name"></a> [name](#input\_name) | character varying | NOT NULL | (sin default) | Nombre de la etiqueta, único. |
 
-- Restricciones e Índices
+Restricciones e Índices
 
   1.	PRIMARY KEY
        * tags_pkey: btree en (id).
@@ -116,7 +110,7 @@ Esta base de datos consta de seis tablas principales para un sistema de blog con
   3.  Índices adicionales
        * ix_tags_id: btree en (id) (redundante con la PK).
 
-- Relaciones 
+Relaciones 
 
   •	Es referenciado por 
     * posts_tags_tag_id_fkey: en la tabla post_tags, la columna tag_id referencia tags(id). 
