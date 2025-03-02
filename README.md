@@ -184,7 +184,7 @@ created_at / updated_at no tienen default ni triggers automáticos por defecto e
 - **Método de migraciones**: Alembic (indicada por la tabla alembic_version).
 
 ## Estructura de tablas RDS
-![Tablas RDS](./assets/RDS_PostgresSQL.png)
+![Tablas RDS](./blob/main/Frontend/src/assets/RDS_PostgresSQL.png)
 
 ### Tabla users
 **Propósito**: Almacena la información principal de los usuarios del blog (credenciales, email, etc.).
