@@ -5,32 +5,36 @@ CloudSecurity
 ---
 
 ## Tabla de Contenidos
-- [Descripción del Proyecto](#descripción-del-proyecto)
+- [Descripción del proyecto](#descripción-del-proyecto)
+- [Estructura del proyecto](#estructura-del-proyecto)
 - [Backend](#backend)
   - [Requisitos](#requisitos)
   - [Instalación](#instalación)
   - [Configuración](#configuración)
   - [Rutas Disponibles](#rutas-disponibles)
-  - [Migraciones de Base de Datos](#migraciones-de-base-de-datos)
+  - [Migraciones de base de datos](#migraciones-de-base-de-datos)
   - [Autenticación](#autenticación)
-  - [Modelo de Datos](#modelo-de-datos)
+  - [Modelo de datos](#modelo-de-datos)
 - [Base de datos](#base-de-datos)
+  - [Estructura de tablas RDS](#estructura-de-tablas-RDS)
 - [Frontend](#frontend)
+  - [Requisitos](#requisitos)
   - [Instalación](#instalación-frontend)
-  - [Componentes Principales](#componentes-principales)
+  - [Componentes principales](#componentes-principales)
   - [Páginas](#páginas)
-  - [Contexto](#contexto)
-- [Cómo Ejecutar el Proyecto](#cómo-ejecutar-el-proyecto)
-- [Contacto](#contacto)
+- [Decisiones de diseño](#decisiones-de-diseño)
+- [Decisiones de seguridad](#decisiones-de-seguridad)
+- [Estimaciones de costos](#estimaciones-de-costos)
+- [Conclusiones y lecciones aprendidas](#conclusiones-y-lecciones-aprendidas)
 
 ---
 <!-- BEGIN_TF_DOCS -->
 
 ## Descripción del Proyecto
 Este repositorio contiene la configuración completa para la aplicación **Blog App** que gestiona usuarios, publicaciones, etiquetas y calificaciones, utilizando **FastAPI** para el backend y **React** para el frontend.
+---
 
 ## Estructura del Proyecto
-
 ### Modules
 
 | Name | Source | Descripción |
@@ -44,26 +48,32 @@ A continuación se describen los módulos utilizados en el backend y el frontend
 
 ### alembic
 Gestión de migraciones con comandos clave.
-- Se utiliza para gestionar las migraciones de la base de datos PostgreSQL.
-- Permite la creación, modificación y reversión de esquemas.
-- Los scripts de migración se encuentran en la carpeta versions.
-
+- Uso: Se utiliza para gestionar las migraciones de la base de datos PostgreSQL.
+- Función: Permite la creación, modificación y reversión de esquemas de bases de datos.
+- Archivos: Los scripts de migración se encuentran en la carpeta **version**s.
 ### app
 Lógica de negocio con la implementación de la API.
-- Contiene la lógica de negocio de la aplicación.
-- Implementación de servicios con FastAPI.
-- Rutas para autenticación, usuarios, publicaciones, etiquetas y calificaciones.
-
+- Uso: Contiene la lógica de negocio de la aplicación.
+- Función: Implementación de servicios con FastAPI ara el manejo de rutas, autenticación y servicios de negocio.
+- Archivos: Rutas para autenticación, usuarios, publicaciones, etiquetas y calificaciones.
+- Archivos principales:
+  * `main.py`: Punto de entrada de la aplicación.
+  * `routes`: Definición de endpoints.
+  * `models`: Definición de modelos de datos.
 ### public
 Archivos estáticos y configuraciones accesibles.
 - Archivos estáticos como imágenes, hojas de estilos y configuración pública.
 - Archivos accesibles desde la interfaz de usuario
-
 ### src
 Código fuente con organización para frontend y backend.
-- Código fuente principal para el backend con FastAPI.
-- Implementación del frontend con React y TailwindCSS.
-- Contexto de autenticación y componentes reutilizables.
+- Uso: Código fuente principal para el backend con FastAPI.
+- Función: Implementación del frontend con **React** y **TailwindCSS**.
+- Archivos: Contexto de autenticación y componentes reutilizables.
+- Archivos principales:
+  * `context`: Manejadores de contexto para la autenticación.
+  * `components`: Componentes reutilizables.
+  * `pages`: Páginas principales como creación, edición y visualización de publicaciones.
+---
 
 ## Backend
 ### Requisitos
@@ -101,7 +111,7 @@ DATABASE_URL=postgresql://usuario:password@localhost:5432/blogdb
 SECRET_KEY=your_secret_key_here
 ```
 
-### Rutas Disponibles
+#### Rutas Disponibles
 - `/auth/login`: Autenticación de usuario.
 - `/auth/request-password-reset`: Solicitud de reseteo de contraseña.
 - `/users`: CRUD de usuarios.
@@ -109,7 +119,7 @@ SECRET_KEY=your_secret_key_here
 - `/tags`: Gestión de etiquetas.
 - `/ratings`: Calificación de publicaciones.
 
-### Migraciones de Base de Datos
+#### Migraciones de Base de Datos
 Las migraciones se manejan con **Alembic**. 
 
 Para generar una nueva migración:
@@ -140,6 +150,7 @@ El sistema de autenticación se basa en **JWT (JSON Web Tokens)** con la librer�
 - **Tag**: Etiquetas asociadas a publicaciones.
 - **Rating**: Calificaciones que los usuarios dan a las publicaciones.
 - **post_tags**: Relación muchos a muchos entre publicaciones y etiquetas.
+---
 
 ## Database
 Esta base de datos consta de seis tablas principales para un sistema de blog con usuarios, posts, etiquetas y calificaciones. Las relaciones y constraints se reflejan de la siguiente manera:
@@ -166,6 +177,7 @@ Integridad referencial:
 
 Timestamps: created_at / updated_at no tienen default ni triggers automáticos por defecto en la definición de la tabla. Esto se suele manejar en la aplicación o con migraciones que establezcan defaults o triggers.
 
+---
 ## Versión de la Base de Datos
 - **Motor**: PostgreSQL 14.15
 - **Método de migraciones**: Alembic (indicada por la tabla alembic_version).
@@ -355,14 +367,13 @@ No tiene referencias a otras tablas ni columnas adicionales.
    ```bash
    npm run dev
    ```
-
 ### Componentes Principales
 - `Navbar`: Barra de navegación con autenticación.
 - `PostCard`: Tarjetas para mostrar publicaciones.
 - `InteractiveRatingStars`: Calificación de publicaciones.
 - `LoadingSpinner`: Indicador de carga.
 - `CustomQuill`: Editor de texto enriquecido con Quill.
-- 
+
 ### Páginas
 - `LoginPage`: Inicio de sesión.
 - `CreatePostPage`: Creación de publicaciones.
@@ -372,8 +383,48 @@ No tiene referencias a otras tablas ni columnas adicionales.
 
 ### Contexto
 El contexto de autenticación se maneja con **AuthContext** usando **React Context API**.
+---
 
+## Decisiones de Diseño
 
+**Backend**:
+- Arquitectura basada en microservicios con FastAPI.
+- Modularización con separación de responsabilidades.
+- Uso de contenedores Docker para empaquetado y despliegue.
+- Escalabilidad automática con grupos de autoescalado ECS.
+
+**Frontend**:
+- Aplicación SPA (Single Page Application) con React.
+- Diseño basado en componentes reutilizables.
+- Gestión de estado global con React Context API.
+- Despliegue estático en S3 con integración al balanceador de carga.
+---
+
+## Decisiones de Seguridad
+
+**Backend**:
+- Validación y autenticación de usuarios con JWT.
+- Hashing de contraseñas con Passlib.
+- Cifrado de datos sensibles con AWS Secrets Manager.
+- Seguridad en la comunicación con HTTPS y certificados gestionados por AWS ACM.
+
+**Frontend**:
+- Restricción de accesos con autenticación basada en tokens.
+- Manejo de errores con React Error Boundaries.
+- Limitación de acceso a recursos estáticos con políticas de permisos S3.
+
+## Conclusiones y Lecciones Aprendidas
+
+**Conclusiones**
+- La combinación de Terraform, AWS y Docker permitió automatizar y estandarizar la infraestructura con alta disponibilidad y escalabilidad.
+- El uso de microservicios facilita la mantenibilidad y escalabilidad de la aplicación.
+- La integración CI/CD garantiza la entrega continua y minimiza errores en los despliegues.
+
+**Lecciones Aprendidas**
+- La automatización de despliegues mejora la eficiencia, pero requiere una adecuada configuración de permisos para evitar fallos de seguridad.
+- El versionado de infraestructura con Terraform permite mantener un historial claro de cambios, aunque demanda una correcta gestión de estados.
+- La separación de subredes públicas y privadas incrementa la seguridad, pero requiere una correcta configuración de los grupos de seguridad.
+- La implementación de pruebas automatizadas es clave para garantizar la calidad del código y la estabilidad del sistema.
 
 
 
