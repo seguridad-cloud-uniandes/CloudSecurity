@@ -146,7 +146,6 @@ El sistema de autenticación se basa en **JWT (JSON Web Tokens)** con la librer�
 - Reseteo de contraseña con tokens de un solo uso.
 
 ### Modelo de datos
-
 - **User**: Almacena información del usuario.
 - **Post**: Publicaciones creadas por los usuarios.
 - **Tag**: Etiquetas asociadas a publicaciones.
@@ -361,6 +360,8 @@ No tiene referencias a otras tablas ni columnas adicionales.
 
 ### Contexto
 El contexto de autenticación se maneja con **AuthContext** usando **React Context API**.
+
+![POCBlog](./Frontend/POCBlog.png)
 
 ---
 
