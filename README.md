@@ -242,9 +242,9 @@ No hay columnas adicionales (ej. created_at) según la definición actual.
 | Columna | Tipo | Nulabilidad | Default | Descripcion |
 |------|-------------|------|---------|:--------:|
 | <a name="input_id"></a> [id](#input\_id) | integer | NOT NULL | nextval('ratings_id_seq'::regclass) | Identificador único (PK). |
-| <a name="input_user id"></a> [user id](#input\_user id) | integer | NOT NULL | (sin default) | Referencia a users(id). |
-| <a name="input_post id"></a> [post id](#input\_post id) | integer | NOT NULL | (sin default) | Referencia a posts(id). |
-| <a name="input_rating"></a> [rating](#input\_rating) | double precision | NOT NULL | (sin default) | RValor de la calificación (p. ej. 1.0 a 5.0). |
+| <a name="input_user_id"></a> [user_id](#input\_user_id) | integer | NOT NULL | (sin default) | Referencia a users(id). |
+| <a name="input_posts_id"></a> [post_id](#input\_posts_id) | integer | NOT NULL | (sin default) | Referencia a posts(id). |
+| <a name="input_rating"></a> [rating](#input\_rating) | double precision | NOT NULL | (sin default) | Valor de la calificación (p. ej. 1.0 a 5.0). |
 
 Restricciones e Índices
 
