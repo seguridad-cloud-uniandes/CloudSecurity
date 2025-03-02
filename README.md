@@ -29,6 +29,42 @@ CloudSecurity
 ## Descripción del Proyecto
 Este repositorio contiene la configuración completa para la aplicación **Blog App** que gestiona usuarios, publicaciones, etiquetas y calificaciones, utilizando **FastAPI** para el backend y **React** para el frontend.
 
+## Estructura del Proyecto
+
+### Modules
+
+| Name | Source | Descripción |
+|------|--------|---------|
+| <a name="module_alembic"></a> [alembic](#module\_alembic) | ./alembic | Gestión de migraciones de bases de datos. |
+| <a name="module_app"></a> [app](#module\_app) | ./app | Código principal de la aplicación con la lógica de negocio. |
+| <a name="module_public"></a> [public](#module\_public) | ./public | Archivos estáticos y configuración pública. |
+| <a name="module_src"></a> [src](#module\_src) | ./src | Código fuente del frontend y backend |
+
+A continuación se describen los módulos utilizados en el backend y el frontend para el desarrollo del proyecto:
+
+### alembic
+Gestión de migraciones con comandos clave.
+- Se utiliza para gestionar las migraciones de la base de datos PostgreSQL.
+- Permite la creación, modificación y reversión de esquemas.
+- Los scripts de migración se encuentran en la carpeta versions.
+
+### app
+Lógica de negocio con la implementación de la API.
+- Contiene la lógica de negocio de la aplicación.
+- Implementación de servicios con FastAPI.
+- Rutas para autenticación, usuarios, publicaciones, etiquetas y calificaciones.
+
+### public
+Archivos estáticos y configuraciones accesibles.
+- Archivos estáticos como imágenes, hojas de estilos y configuración pública.
+- Archivos accesibles desde la interfaz de usuario
+
+### src
+Código fuente con organización para frontend y backend.
+- Código fuente principal para el backend con FastAPI.
+- Implementación del frontend con React y TailwindCSS.
+- Contexto de autenticación y componentes reutilizables.
+
 ## Backend
 ### Requisitos
 - Python 3.10+
