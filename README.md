@@ -32,6 +32,7 @@ CloudSecurity
 
 ## Descripción del Proyecto
 Este repositorio contiene la configuración completa para la aplicación **Blog App** que gestiona usuarios, publicaciones, etiquetas y calificaciones, utilizando **FastAPI** para el backend y **React** para el frontend.
+
 ---
 
 ## Estructura del Proyecto
@@ -110,7 +111,6 @@ Las variables de entorno necesarias son:
 DATABASE_URL=postgresql://usuario:password@localhost:5432/blogdb
 SECRET_KEY=your_secret_key_here
 ```
-
 #### Rutas Disponibles
 - `/auth/login`: Autenticación de usuario.
 - `/auth/request-password-reset`: Solicitud de reseteo de contraseña.
@@ -162,28 +162,31 @@ Esta base de datos consta de seis tablas principales para un sistema de blog con
 - **ratings**: Calificaciones de usuarios a posts, con restricción de una calificación única por post/usuario.
 - **alembic_version**: Tabla de control de versiones de migraciones.
 
-Relación principal:
+### Relación principal:
 - **Users 1**:N Posts (un usuario puede tener muchos posts).
 - **Users 1**:N Ratings (un usuario puede dar muchas calificaciones).
 - **Posts 1**:N Ratings (un post puede tener muchas calificaciones).
 - **Posts N**:M Tags (vía post_tags).
  
-Integridad referencial:
-  * Mantenida mediante Foreign Keys en posts, post_tags y ratings.
-  * Evita la eliminación o inserción de registros que rompan la consistencia.
-  * Se revisará la política de borrado para cada FK (por ejemplo, si al eliminar un user se deben eliminar sus posts o sus ratings).
+### Integridad referencial:
+- Mantenida mediante Foreign Keys en posts, post_tags y ratings.
+- Evita la eliminación o inserción de registros que rompan la consistencia.
+- Se revisará la política de borrado para cada FK (por ejemplo, si al eliminar un user se deben eliminar sus posts o sus ratings).
 
-Índices únicos: para evitar duplicados en campos críticos (users.email, users.username, etc.) y en relaciones (ratings(post_id, user_id)).
+### Índices únicos: 
+Para evitar duplicados en campos críticos (users.email, users.username, etc.) y en relaciones (ratings(post_id, user_id)).
 
-Timestamps: created_at / updated_at no tienen default ni triggers automáticos por defecto en la definición de la tabla. Esto se suele manejar en la aplicación o con migraciones que establezcan defaults o triggers.
+### Timestamps: 
+created_at / updated_at no tienen default ni triggers automáticos por defecto en la definición de la tabla. Esto se suele manejar en la aplicación o con migraciones que establezcan defaults o triggers.
 
----
-## Versión de la Base de Datos
+### Versión de la Base de Datos
 - **Motor**: PostgreSQL 14.15
 - **Método de migraciones**: Alembic (indicada por la tabla alembic_version).
 
-## Tabla users
+## Estructura de tablas RDS
+![Tablas RDS](./docs/RDS_PostgresSQL.png)
 
+### Tabla users
 **Propósito**: Almacena la información principal de los usuarios del blog (credenciales, email, etc.).
 
 | Columna | Tipo | Nulabilidad | Default | Descripcion |
@@ -195,23 +198,20 @@ Timestamps: created_at / updated_at no tienen default ni triggers automáticos p
 | <a name="input_created_at"></a> [created_at](#input\_created_at) | timestamp without time zone | NOT NULL | (sin default) | Fecha/hora de creación del usuario (si se usa). |
 | <a name="password_reminder"></a> [password_reminder](#input\_password_reminder) | character varying(255) | NOT NULL | 'default reminder'::character varying | Campo extra para recordatorio de contraseña. |
 
-Restricciones e Índices
+### Restricciones e Índices
+**PRIMARY KEY**
+- users_pkey: btree en (id).
+**Únicos**
+- ix_users_email (UNIQUE): btree en (email).
+- ix_users_username (UNIQUE): btree en (username).
+**Índices adicionales**
+- ix_users_id: btree en (id) (redundante con la PK).
 
-- PRIMARY KEY
-  * users_pkey: btree en (id).
-- Únicos
-  * ix_users_email (UNIQUE): btree en (email).
-  * ix_users_username (UNIQUE): btree en (username).
-- Índices adicionales
-  * ix_users_id: btree en (id) (redundante con la PK).
-
- Relaciones (Foreign Keys desde otras tablas)
-
+### Relaciones (Foreign Keys desde otras tablas)
 - posts.author_id_fkey: en la tabla posts, la columna author_id referencia users(id).
 - ratings.user_id_fkey: en la tabla ratings, la columna user_id referencia users(id).
 
-  ## Tabla posts
-
+## Tabla posts
 **Propósito**: Almacena las publicaciones (posts) del blog.
 
 | Columna | Tipo | Nulabilidad | Default | Descripcion |
@@ -224,24 +224,21 @@ Restricciones e Índices
 | <a name="updated_at"></a> [updated_at](#input\_updated_at) | timestamp without time zone | NOT NULL | (sin default) | Fecha/hora de última actualización. |
 | <a name="password_reminder"></a> [password_reminder](#input\_password_reminder) | boolean | NOT NULL | (sin default) | Indica si el post está publicado o no. |
 
-Restricciones e Índices
+### Restricciones e Índices
+**PRIMARY KEY**
+- posts_pkey: btree en (id).
+**Índices adicionales**
+- ix_posts_id: btree en (id) (redundante con la PK).
 
-- PRIMARY KEY
-  * posts_pkey: btree en (id).
-- Índices adicionales
-  * ix_posts_id: btree en (id) (redundante con la PK).
-
-Relaciones
-
-- Foreign Keys 
-  * posts_author_id_fkey: (author_id) -> users(id). 
-    Esto asegura que si se elimina un user, se podría restringir o anular la relación (dependiendo de la política de   borrado configurada). (La salida no muestra explícitamente la política ON DELETE.)
-- Es Referenciado por 
-  * post_tags.post_id_fkey: en la tabla post_tags, la columna post_id referencia posts(id).
-  * ratings_post_id_fkey: en la tabla ratings, la columna post_id referencia posts(id).
+### Relaciones
+**Foreign Keys** 
+- posts_author_id_fkey: (author_id) -> users(id). 
+  Esto asegura que si se elimina un user, se podría restringir o anular la relación (dependiendo de la política de   borrado configurada). (La salida no muestra explícitamente la política ON DELETE.)
+**Es Referenciado por**
+- post_tags.post_id_fkey: en la tabla post_tags, la columna post_id referencia posts(id).
+- ratings_post_id_fkey: en la tabla ratings, la columna post_id referencia posts(id).
  
-## Tabla tags
-
+ ## Tabla tags
 **Propósito**: Almacena etiquetas (tags) para clasificar los posts.
 
 | Columna | Tipo | Nulabilidad | Default | Descripcion |
@@ -249,22 +246,20 @@ Relaciones
 | <a name="input_id"></a> [id](#input\_id) | integer | NOT NULL | nextval('tags_id_seq'::regclass) | Identificador único (PK). |
 | <a name="input_name"></a> [name](#input\_name) | character varying | NOT NULL | (sin default) | Nombre de la etiqueta, único. |
 
-Restricciones e Índices
+### Restricciones e Índices
 
-- PRIMARY KEY
-  * tags_pkey: btree en (id).
-- Índices único
-  * ix_tags_name: UNIQUE btree en (name).
-- Índices adicionales
-  * ix_tags_id: btree en (id) (redundante con la PK).
+**PRIMARY KEY**
+- tags_pkey: btree en (id).
+**Indices único**
+- ix_tags_name: UNIQUE btree en (name).
+**Índices adicionales**
+- ix_tags_id: btree en (id) (redundante con la PK).
 
-Relaciones 
-
-- Es referenciado por 
-  * posts_tags_tag_id_fkey: en la tabla post_tags, la columna tag_id referencia tags(id). 
+### Relaciones 
+**Es referenciado por** 
+- posts_tags_tag_id_fkey: en la tabla post_tags, la columna tag_id referencia tags(id). 
       
-  ## Tabla post_tags
-
+## Tabla post_tags
 **Propósito**: Tabla intermedia para la relación muchos-a-muchos entre posts y tags.
 
 | Columna | Tipo | Nulabilidad | Default | Descripcion |
@@ -272,19 +267,16 @@ Relaciones
 | <a name="input_post_id"></a> [post_id](#input\_post_id) | integer | NOT NULL | (sin default) | Referencia a la tabla posts. |
 | <a name="input_tag_id"></a> [tag_id](#input\_tag_id) | integer | NOT NULL | (sin default) | Referencia a la tabla tags. |
 
-Restricciones e Índices
+### Restricciones e Índices
 
-- PRIMARY KEY
-  * posts_tags_pkey: btree en (post_id, tag_id). 
-    Define la clave primaria compuesta.
-- Foreign Keys
-  * post_tags_post_id_fkey: (post_id) -> posts(id).
-  * post_tags_tag_id_fkey: (tag_id) -> tags(id).
-
-No hay columnas adicionales (ej. created_at) según la definición actual.
+**PRIMARY KEY**
+- posts_tags_pkey: btree en (post_id, tag_id). 
+  Define la clave primaria compuesta.
+**Foreign Keys**
+- post_tags_post_id_fkey: (post_id) -> posts(id).
+- post_tags_tag_id_fkey: (tag_id) -> tags(id).
 
 ## Tabla ratings
-
 **Propósito**: Almacena calificaciones que los usuarios hacen sobre los posts.
 
 | Columna | Tipo | Nulabilidad | Default | Descripcion |
@@ -294,21 +286,20 @@ No hay columnas adicionales (ej. created_at) según la definición actual.
 | <a name="input_posts_id"></a> [post_id](#input\_posts_id) | integer | NOT NULL | (sin default) | Referencia a posts(id). |
 | <a name="input_rating"></a> [rating](#input\_rating) | double precision | NOT NULL | (sin default) | Valor de la calificación (p. ej. 1.0 a 5.0). |
 
-Restricciones e Índices
+### Restricciones e Índices
 
-- PRIMARY KEY
-  * ratings_pkey: btree en (id).
-- Índices único
-  * unique_post_user_rating: UNIQUE CONSTRAINT en (post_id, user_id). 
-  * Un usuario no puede calificar el mismo post más de una vez.
-- Índices adicionales
-  * ix_ratings_id: btree en (id) (redundante con la PK).
-- Foreign Keys 
-  * ratings_post_id_fkey: (post_id) -> posts(id).
-  * ratings_user_id_fkey: (user_id) -> users(id).
+**PRIMARY KEY**
+- ratings_pkey: btree en (id).
+**Índices únicos**
+- unique_post_user_rating: UNIQUE CONSTRAINT en (post_id, user_id). 
+- Un usuario no puede calificar el mismo post más de una vez.
+**Índices adicionales**
+- ix_ratings_id: btree en (id) (redundante con la PK).
+**Foreign Keys**
+- ratings_post_id_fkey: (post_id) -> posts(id).
+- ratings_user_id_fkey: (user_id) -> users(id).
 
-  ## Tabla alembic_version
-
+## Tabla alembic_version
 **Propósito**: Tabla de control de versiones utilizada por Alembic (herramienta de migraciones de SQLAlchemy).
   
 | Columna | Tipo | Nulabilidad | Default | Descripcion |
@@ -316,37 +307,65 @@ Restricciones e Índices
 | <a name="input_version_num"></a> [version_num](#input\_version_num) | character varying(32) | NOT NULL | (sin default) | Identificador único de la versión de migración. |
 | <a name="input_tag_id"></a> [tag_id](#input\_tag_id) | integer | NOT NULL | (sin default) | Referencia a la tabla tags. |
 
-Restricciones e Índices
-
-- PRIMARY KEY
-  * alembic_version_pkc: btree en (version_num).
+### Restricciones e Índices
+**PRIMARY KEY**
+- alembic_version_pkc: btree en (version_num).
 
 No tiene referencias a otras tablas ni columnas adicionales.
 
  ## Comentarios adicionales
 
-- **Claves Foráneas**: aquí se confirman varias Foreign Keys: 
-  * posts.author_id -> users.id
-  * ratings.user_id -> users.id
-  * ratings.post_id -> posts.id
-  * post_tags.post_id -> posts.id
-  * post_tags.tag_id -> tags.id
+**Claves Foráneas** 
+- posts.author_id -> users.id
+- ratings.user_id -> users.id
+- ratings.post_id -> posts.id
+- post_tags.post_id -> posts.id
+- post_tags.tag_id -> tags.id
 
-- **Restricciones de Unicidad**
-  * users.email y users.username son únicos.
-  * tags.name es único.
-  * ratings(post_id, user_id) es único.
-  * post_tags(post_id, tag_id) es la PK compuesta, por lo que es único por definición.
+**Restricciones de Unicidad**
+- users.email y users.username son únicos.
+- tags.name es único.
+- ratings(post_id, user_id) es único.
+- post_tags(post_id, tag_id) es la PK compuesta, por lo que es único por definición.
 
-- **Tipos de Datos**
-  * Se usan character varying y text para texto, integer para IDs y double precision para calificaciones.
-  * Los campos created_at y updated_at están declarados como timestamp without time zone.
-  * is_published es un boolean.
-  * password_reminder tiene un tamaño máximo de 255 caracteres y un default 'default reminder'.
+**Tipos de Datos**
+- Se usan character varying y text para texto, integer para IDs y double precision para calificaciones.
+- Los campos created_at y updated_at están declarados como timestamp without time zone.
+- is_published es un boolean.
+- password_reminder tiene un tamaño máximo de 255 caracteres y un default 'default reminder'.
 
-- **Migraciones**
-  * Alembic utiliza la tabla alembic_version para controlar las migraciones aplicadas. Cada versión se almacena en version_num.
+**Migraciones**
+- Alembic utiliza la tabla alembic_version para controlar las migraciones aplicadas. Cada versión se almacena en version_num.
 
+**Pruebas Automatizadas**
+- Backend (App):
+  * Uso de **pytest** para pruebas unitarias sobre servicios y modelos.
+  * Pruebas de integración con la base de datos usando **TestContainers**
+- Frontend (Src):
+  * Pruebas de componentes con **Jest** y **React Testing Library**.
+
+**Gestión de Logs**
+- Backend (App):
+  * Integración con **AWS CloudWatch Logs** para el envio de logs.
+  * Uso del driver de logs de Docker con formato JSON.
+- Frontend (Src):
+  * Logs de errores y advertencias manejados con **React Error Boundaries**.
+  * Limitación de acceso a recursos estáticos con politicas de permisos S3.
+
+**Flujos de Trabajo CI/CD**
+- Backend:
+  * Pipeline de integración y despliegue continuo con **GitHub Actions**
+  * Verificación de código con **pre-commit**.
+  * BEjecución de pruebas del despliegue.
+- Infraestructura:
+  * Despliegue automatizado con **Terraform Cloud** o **GitHub Actions**
+  * Bloqueo de estado remoto con **AWS DynamoDB**.
+
+**Respaldo y Recuperación**
+- Base de datos RDS
+  * Snapshots para **RDS** que permiten la restauración en AWS.
+  * Resplado automático con políticas de retención.
+  * Versionado habilitado para **S3** que permite habilitación de versiones previas.
 ---
 
 ## Frontend
@@ -386,7 +405,6 @@ El contexto de autenticación se maneja con **AuthContext** usando **React Conte
 ---
 
 ## Decisiones de Diseño
-
 **Backend**:
 - Arquitectura basada en microservicios con FastAPI.
 - Modularización con separación de responsabilidades.
@@ -401,22 +419,20 @@ El contexto de autenticación se maneja con **AuthContext** usando **React Conte
 ---
 
 ## Decisiones de Seguridad
-
 **Backend**:
-- Validación y autenticación de usuarios con JWT.
-- Hashing de contraseñas con Passlib.
-- Cifrado de datos sensibles con AWS Secrets Manager.
-- Seguridad en la comunicación con HTTPS y certificados gestionados por AWS ACM.
+- Validación y autenticación de usuarios con **JWT**.
+- Hashing de contraseñas con **Passlib**.
+- Cifrado de datos sensibles con **AWS Secrets Manager**.
+- Seguridad en la comunicación con HTTPS y certificados gestionados por **AWS ACM**.
 
 **Frontend**:
 - Restricción de accesos con autenticación basada en tokens.
-- Manejo de errores con React Error Boundaries.
+- Manejo de errores con **React Error Boundaries**.
 - Limitación de acceso a recursos estáticos con políticas de permisos S3.
 
 ## Conclusiones y Lecciones Aprendidas
-
 **Conclusiones**
-- La combinación de Terraform, AWS y Docker permitió automatizar y estandarizar la infraestructura con alta disponibilidad y escalabilidad.
+- La combinación de **Terraform**, **AWS** y **Docker** permitió automatizar y estandarizar la infraestructura con alta disponibilidad y escalabilidad.
 - El uso de microservicios facilita la mantenibilidad y escalabilidad de la aplicación.
 - La integración CI/CD garantiza la entrega continua y minimiza errores en los despliegues.
 
@@ -424,36 +440,7 @@ El contexto de autenticación se maneja con **AuthContext** usando **React Conte
 - La automatización de despliegues mejora la eficiencia, pero requiere una adecuada configuración de permisos para evitar fallos de seguridad.
 - El versionado de infraestructura con Terraform permite mantener un historial claro de cambios, aunque demanda una correcta gestión de estados.
 - La separación de subredes públicas y privadas incrementa la seguridad, pero requiere una correcta configuración de los grupos de seguridad.
-- La implementación de pruebas automatizadas es clave para garantizar la calidad del código y la estabilidad del sistema.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-## Outputs
-
-No outputs.
+- La implementación de pruebas es clave para garantizar la calidad del código y la estabilidad del sistema.
 <!-- END_TF_DOCS -->
 
 ## Authors
