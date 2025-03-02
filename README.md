@@ -17,14 +17,14 @@ CloudSecurity
   - [Modelo de datos](#modelo-de-datos)
 - [Base de datos](#base-de-datos)
   - [Estructura de tablas RDS](#estructura-de-tablas-RDS)
-- [Frontend](#frontend)
+ - [Frontend](#frontend)
   - [Requisitos](#requisitos)
   - [Instalación](#instalación)
   - [Componentes principales](#componentes-principales)
   - [Páginas](#páginas)
+- [Información adicional](#información-adicional)
 - [Decisiones de diseño](#decisiones-de-diseño)
 - [Decisiones de seguridad](#decisiones-de-seguridad)
-- [Estimaciones de costos](#estimaciones-de-costos)
 - [Conclusiones y lecciones aprendidas](#conclusiones-y-lecciones-aprendidas)
 
 ---
@@ -36,7 +36,7 @@ Este repositorio contiene la configuración completa para la aplicación **Blog 
 ---
 
 ## Estructura del Proyecto
-### Modulos
+### Módulos
 
 | Name | Source | Descripción |
 |------|--------|---------|
@@ -122,22 +122,24 @@ SECRET_KEY=your_secret_key_here
 #### Migraciones de base de datos
 Las migraciones se manejan con **Alembic**. 
 
-Para generar una nueva migración:
+- Para generar una nueva migración:
 ```bash
 alembic revision --autogenerate -m "Descripción de la migración"
 ```
 
-Para aplicar migraciones:
+- Para aplicar migraciones:
 ```bash
 alembic upgrade head
 ```
 
-Para revertir la última migración:
+- Para revertir la última migración:
 ```bash
 alembic downgrade -1
 ```
 
 ### Autenticación
+![Autenticación](./Frontend/Autenticaci%C3%B3n_App.png)
+
 El sistema de autenticación se basa en **JWT (JSON Web Tokens)** con la librería **FastAPI Security**.
 - Registro de usuarios.
 - Inicio de sesión con generación de tokens.
@@ -454,6 +456,7 @@ El contexto de autenticación se maneja con **AuthContext** usando **React Conte
 - El versionado de infraestructura con Terraform permite mantener un historial claro de cambios, aunque demanda una correcta gestión de estados.
 - La separación de subredes públicas y privadas incrementa la seguridad, pero requiere una correcta configuración de los grupos de seguridad.
 - La implementación de pruebas es clave para garantizar la calidad del código y la estabilidad del sistema.
+
 <!-- END_TF_DOCS -->
 
 ## Authors
