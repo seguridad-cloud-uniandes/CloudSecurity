@@ -4,14 +4,14 @@ CloudSecurity
 # README
 ---
 
-## Tabla de Contenidos
+## Tabla de Contenido
 - [Descripción del proyecto](#descripción-del-proyecto)
 - [Estructura del proyecto](#estructura-del-proyecto)
 - [Backend](#backend)
   - [Requisitos](#requisitos)
   - [Instalación](#instalación)
   - [Configuración](#configuración)
-  - [Rutas Disponibles](#rutas-disponibles)
+  - [Rutas disponibles](#rutas-disponibles)
   - [Migraciones de base de datos](#migraciones-de-base-de-datos)
   - [Autenticación](#autenticación)
   - [Modelo de datos](#modelo-de-datos)
@@ -19,7 +19,7 @@ CloudSecurity
   - [Estructura de tablas RDS](#estructura-de-tablas-RDS)
 - [Frontend](#frontend)
   - [Requisitos](#requisitos)
-  - [Instalación](#instalación-frontend)
+  - [Instalación](#instalación)
   - [Componentes principales](#componentes-principales)
   - [Páginas](#páginas)
 - [Decisiones de diseño](#decisiones-de-diseño)
@@ -36,7 +36,7 @@ Este repositorio contiene la configuración completa para la aplicación **Blog 
 ---
 
 ## Estructura del Proyecto
-### Modules
+### Modulos
 
 | Name | Source | Descripción |
 |------|--------|---------|
@@ -47,12 +47,12 @@ Este repositorio contiene la configuración completa para la aplicación **Blog 
 
 A continuación se describen los módulos utilizados en el backend y el frontend para el desarrollo del proyecto:
 
-### alembic
+### Alembic
 Gestión de migraciones con comandos clave.
 - Uso: Se utiliza para gestionar las migraciones de la base de datos PostgreSQL.
 - Función: Permite la creación, modificación y reversión de esquemas de bases de datos.
 - Archivos: Los scripts de migración se encuentran en la carpeta **version**s.
-### app
+### App
 Lógica de negocio con la implementación de la API.
 - Uso: Contiene la lógica de negocio de la aplicación.
 - Función: Implementación de servicios con FastAPI ara el manejo de rutas, autenticación y servicios de negocio.
@@ -61,11 +61,11 @@ Lógica de negocio con la implementación de la API.
   * `main.py`: Punto de entrada de la aplicación.
   * `routes`: Definición de endpoints.
   * `models`: Definición de modelos de datos.
-### public
+### Public
 Archivos estáticos y configuraciones accesibles.
 - Archivos estáticos como imágenes, hojas de estilos y configuración pública.
 - Archivos accesibles desde la interfaz de usuario
-### src
+### Src
 Código fuente con organización para frontend y backend.
 - Uso: Código fuente principal para el backend con FastAPI.
 - Función: Implementación del frontend con **React** y **TailwindCSS**.
@@ -119,7 +119,7 @@ SECRET_KEY=your_secret_key_here
 - `/tags`: Gestión de etiquetas.
 - `/ratings`: Calificación de publicaciones.
 
-#### Migraciones de Base de Datos
+#### Migraciones de base de datos
 Las migraciones se manejan con **Alembic**. 
 
 Para generar una nueva migración:
@@ -143,7 +143,7 @@ El sistema de autenticación se basa en **JWT (JSON Web Tokens)** con la librer�
 - Inicio de sesión con generación de tokens.
 - Reseteo de contraseña con tokens de un solo uso.
 
-### Modelo de Datos
+### Modelo de datos
 
 - **User**: Almacena información del usuario.
 - **Post**: Publicaciones creadas por los usuarios.
@@ -152,7 +152,7 @@ El sistema de autenticación se basa en **JWT (JSON Web Tokens)** con la librer�
 - **post_tags**: Relación muchos a muchos entre publicaciones y etiquetas.
 ---
 
-## Database
+## Base de datos
 Esta base de datos consta de seis tablas principales para un sistema de blog con usuarios, posts, etiquetas y calificaciones. Las relaciones y constraints se reflejan de la siguiente manera:
 
 - **users**: Almacena usuarios, con email y username únicos.
@@ -179,7 +179,7 @@ Para evitar duplicados en campos críticos (users.email, users.username, etc.) y
 ### Timestamps: 
 created_at / updated_at no tienen default ni triggers automáticos por defecto en la definición de la tabla. Esto se suele manejar en la aplicación o con migraciones que establezcan defaults o triggers.
 
-### Versión de la Base de Datos
+### Versión de la base de datos
 - **Motor**: PostgreSQL 14.15
 - **Método de migraciones**: Alembic (indicada por la tabla alembic_version).
 
@@ -198,12 +198,14 @@ created_at / updated_at no tienen default ni triggers automáticos por defecto e
 | <a name="input_created_at"></a> [created_at](#input\_created_at) | timestamp without time zone | NOT NULL | (sin default) | Fecha/hora de creación del usuario (si se usa). |
 | <a name="password_reminder"></a> [password_reminder](#input\_password_reminder) | character varying(255) | NOT NULL | 'default reminder'::character varying | Campo extra para recordatorio de contraseña. |
 
-### Restricciones e Índices
+### Restricciones e índices
 **PRIMARY KEY**
 - users_pkey: btree en (id).
+  
 **Únicos**
 - ix_users_email (UNIQUE): btree en (email).
 - ix_users_username (UNIQUE): btree en (username).
+  
 **Índices adicionales**
 - ix_users_id: btree en (id) (redundante con la PK).
 
@@ -224,9 +226,10 @@ created_at / updated_at no tienen default ni triggers automáticos por defecto e
 | <a name="updated_at"></a> [updated_at](#input\_updated_at) | timestamp without time zone | NOT NULL | (sin default) | Fecha/hora de última actualización. |
 | <a name="password_reminder"></a> [password_reminder](#input\_password_reminder) | boolean | NOT NULL | (sin default) | Indica si el post está publicado o no. |
 
-### Restricciones e Índices
+### Restricciones e índices
 **PRIMARY KEY**
 - posts_pkey: btree en (id).
+
 **Índices adicionales**
 - ix_posts_id: btree en (id) (redundante con la PK).
 
@@ -234,6 +237,7 @@ created_at / updated_at no tienen default ni triggers automáticos por defecto e
 **Foreign Keys** 
 - posts_author_id_fkey: (author_id) -> users(id). 
   Esto asegura que si se elimina un user, se podría restringir o anular la relación (dependiendo de la política de   borrado configurada). (La salida no muestra explícitamente la política ON DELETE.)
+
 **Es Referenciado por**
 - post_tags.post_id_fkey: en la tabla post_tags, la columna post_id referencia posts(id).
 - ratings_post_id_fkey: en la tabla ratings, la columna post_id referencia posts(id).
@@ -246,12 +250,14 @@ created_at / updated_at no tienen default ni triggers automáticos por defecto e
 | <a name="input_id"></a> [id](#input\_id) | integer | NOT NULL | nextval('tags_id_seq'::regclass) | Identificador único (PK). |
 | <a name="input_name"></a> [name](#input\_name) | character varying | NOT NULL | (sin default) | Nombre de la etiqueta, único. |
 
-### Restricciones e Índices
+### Restricciones e índices
 
 **PRIMARY KEY**
 - tags_pkey: btree en (id).
+
 **Indices único**
 - ix_tags_name: UNIQUE btree en (name).
+
 **Índices adicionales**
 - ix_tags_id: btree en (id) (redundante con la PK).
 
@@ -267,11 +273,12 @@ created_at / updated_at no tienen default ni triggers automáticos por defecto e
 | <a name="input_post_id"></a> [post_id](#input\_post_id) | integer | NOT NULL | (sin default) | Referencia a la tabla posts. |
 | <a name="input_tag_id"></a> [tag_id](#input\_tag_id) | integer | NOT NULL | (sin default) | Referencia a la tabla tags. |
 
-### Restricciones e Índices
+### Restricciones e índices
 
 **PRIMARY KEY**
 - posts_tags_pkey: btree en (post_id, tag_id). 
   Define la clave primaria compuesta.
+
 **Foreign Keys**
 - post_tags_post_id_fkey: (post_id) -> posts(id).
 - post_tags_tag_id_fkey: (tag_id) -> tags(id).
@@ -286,15 +293,18 @@ created_at / updated_at no tienen default ni triggers automáticos por defecto e
 | <a name="input_posts_id"></a> [post_id](#input\_posts_id) | integer | NOT NULL | (sin default) | Referencia a posts(id). |
 | <a name="input_rating"></a> [rating](#input\_rating) | double precision | NOT NULL | (sin default) | Valor de la calificación (p. ej. 1.0 a 5.0). |
 
-### Restricciones e Índices
+### Restricciones e índices
 
 **PRIMARY KEY**
 - ratings_pkey: btree en (id).
+
 **Índices únicos**
 - unique_post_user_rating: UNIQUE CONSTRAINT en (post_id, user_id). 
 - Un usuario no puede calificar el mismo post más de una vez.
+
 **Índices adicionales**
 - ix_ratings_id: btree en (id) (redundante con la PK).
+
 **Foreign Keys**
 - ratings_post_id_fkey: (post_id) -> posts(id).
 - ratings_user_id_fkey: (user_id) -> users(id).
@@ -307,65 +317,12 @@ created_at / updated_at no tienen default ni triggers automáticos por defecto e
 | <a name="input_version_num"></a> [version_num](#input\_version_num) | character varying(32) | NOT NULL | (sin default) | Identificador único de la versión de migración. |
 | <a name="input_tag_id"></a> [tag_id](#input\_tag_id) | integer | NOT NULL | (sin default) | Referencia a la tabla tags. |
 
-### Restricciones e Índices
+### Restricciones e índices
 **PRIMARY KEY**
 - alembic_version_pkc: btree en (version_num).
 
 No tiene referencias a otras tablas ni columnas adicionales.
 
- ## Comentarios adicionales
-
-**Claves Foráneas** 
-- posts.author_id -> users.id
-- ratings.user_id -> users.id
-- ratings.post_id -> posts.id
-- post_tags.post_id -> posts.id
-- post_tags.tag_id -> tags.id
-
-**Restricciones de Unicidad**
-- users.email y users.username son únicos.
-- tags.name es único.
-- ratings(post_id, user_id) es único.
-- post_tags(post_id, tag_id) es la PK compuesta, por lo que es único por definición.
-
-**Tipos de Datos**
-- Se usan character varying y text para texto, integer para IDs y double precision para calificaciones.
-- Los campos created_at y updated_at están declarados como timestamp without time zone.
-- is_published es un boolean.
-- password_reminder tiene un tamaño máximo de 255 caracteres y un default 'default reminder'.
-
-**Migraciones**
-- Alembic utiliza la tabla alembic_version para controlar las migraciones aplicadas. Cada versión se almacena en version_num.
-
-**Pruebas Automatizadas**
-- Backend (App):
-  * Uso de **pytest** para pruebas unitarias sobre servicios y modelos.
-  * Pruebas de integración con la base de datos usando **TestContainers**
-- Frontend (Src):
-  * Pruebas de componentes con **Jest** y **React Testing Library**.
-
-**Gestión de Logs**
-- Backend (App):
-  * Integración con **AWS CloudWatch Logs** para el envio de logs.
-  * Uso del driver de logs de Docker con formato JSON.
-- Frontend (Src):
-  * Logs de errores y advertencias manejados con **React Error Boundaries**.
-  * Limitación de acceso a recursos estáticos con politicas de permisos S3.
-
-**Flujos de Trabajo CI/CD**
-- Backend:
-  * Pipeline de integración y despliegue continuo con **GitHub Actions**
-  * Verificación de código con **pre-commit**.
-  * BEjecución de pruebas del despliegue.
-- Infraestructura:
-  * Despliegue automatizado con **Terraform Cloud** o **GitHub Actions**
-  * Bloqueo de estado remoto con **AWS DynamoDB**.
-
-**Respaldo y Recuperación**
-- Base de datos RDS
-  * Snapshots para **RDS** que permiten la restauración en AWS.
-  * Resplado automático con políticas de retención.
-  * Versionado habilitado para **S3** que permite habilitación de versiones previas.
 ---
 
 ## Frontend
@@ -386,7 +343,7 @@ No tiene referencias a otras tablas ni columnas adicionales.
    ```bash
    npm run dev
    ```
-### Componentes Principales
+### Componentes principales
 - `Navbar`: Barra de navegación con autenticación.
 - `PostCard`: Tarjetas para mostrar publicaciones.
 - `InteractiveRatingStars`: Calificación de publicaciones.
@@ -402,6 +359,62 @@ No tiene referencias a otras tablas ni columnas adicionales.
 
 ### Contexto
 El contexto de autenticación se maneja con **AuthContext** usando **React Context API**.
+
+---
+
+## Información adicional
+
+**Claves foráneas** 
+- posts.author_id -> users.id
+- ratings.user_id -> users.id
+- ratings.post_id -> posts.id
+- post_tags.post_id -> posts.id
+- post_tags.tag_id -> tags.id
+
+**Restricciones de unicidad**
+- users.email y users.username son únicos.
+- tags.name es único.
+- ratings(post_id, user_id) es único.
+- post_tags(post_id, tag_id) es la PK compuesta, por lo que es único por definición.
+
+**Tipos de datos**
+- Se usan character varying y text para texto, integer para IDs y double precision para calificaciones.
+- Los campos created_at y updated_at están declarados como timestamp without time zone.
+- is_published es un boolean.
+- password_reminder tiene un tamaño máximo de 255 caracteres y un default 'default reminder'.
+
+**Migraciones**
+- Alembic utiliza la tabla alembic_version para controlar las migraciones aplicadas. Cada versión se almacena en version_num.
+
+**Pruebas automatizadas**
+- Backend (App):
+  * Uso de **pytest** para pruebas unitarias sobre servicios y modelos.
+  * Pruebas de integración con la base de datos usando **TestContainers**
+- Frontend (Src):
+  * Pruebas de componentes con **Jest** y **React Testing Library**.
+
+**Gestión de logs**
+- Backend (App):
+  * Integración con **AWS CloudWatch Logs** para el envio de logs.
+  * Uso del driver de logs de Docker con formato JSON.
+- Frontend (Src):
+  * Logs de errores y advertencias manejados con **React Error Boundaries**.
+  * Limitación de acceso a recursos estáticos con politicas de permisos S3.
+
+**Flujos de trabajo CI/CD**
+- Backend:
+  * Pipeline de integración y despliegue continuo con **GitHub Actions**
+  * Verificación de código con **pre-commit**.
+  * BEjecución de pruebas del despliegue.
+- Infraestructura:
+  * Despliegue automatizado con **Terraform Cloud** o **GitHub Actions**
+  * Bloqueo de estado remoto con **AWS DynamoDB**.
+
+**Respaldo y recuperación**
+- Base de datos RDS
+  * Snapshots para **RDS** que permiten la restauración en AWS.
+  * Resplado automático con políticas de retención.
+  * Versionado habilitado para **S3** que permite habilitación de versiones previas.
 ---
 
 ## Decisiones de Diseño
@@ -430,13 +443,13 @@ El contexto de autenticación se maneja con **AuthContext** usando **React Conte
 - Manejo de errores con **React Error Boundaries**.
 - Limitación de acceso a recursos estáticos con políticas de permisos S3.
 
-## Conclusiones y Lecciones Aprendidas
+## Conclusiones y lecciones aprendidas
 **Conclusiones**
 - La combinación de **Terraform**, **AWS** y **Docker** permitió automatizar y estandarizar la infraestructura con alta disponibilidad y escalabilidad.
 - El uso de microservicios facilita la mantenibilidad y escalabilidad de la aplicación.
 - La integración CI/CD garantiza la entrega continua y minimiza errores en los despliegues.
 
-**Lecciones Aprendidas**
+**Lecciones aprendidas**
 - La automatización de despliegues mejora la eficiencia, pero requiere una adecuada configuración de permisos para evitar fallos de seguridad.
 - El versionado de infraestructura con Terraform permite mantener un historial claro de cambios, aunque demanda una correcta gestión de estados.
 - La separación de subredes públicas y privadas incrementa la seguridad, pero requiere una correcta configuración de los grupos de seguridad.
