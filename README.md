@@ -86,6 +86,7 @@ Código fuente con organización para frontend y backend.
 - PostgreSQL
 - JWT (JSON Web Tokens)
 - Passlib para el hashing de contraseñas
+- Compruebe el archivo de requisitos para instalar las demás dependencias
 
 ### Instalación
 1. Clonar el repositorio.
@@ -109,7 +110,6 @@ Código fuente con organización para frontend y backend.
 Las variables de entorno necesarias son:
 ```env
 DATABASE_URL=postgresql://usuario:password@localhost:5432/blogdb
-SECRET_KEY=your_secret_key_here
 ```
 #### Rutas Disponibles
 - `/auth/login`: Autenticación de usuario.
@@ -325,6 +325,24 @@ created_at / updated_at no tienen default ni triggers automáticos por defecto e
 No tiene referencias a otras tablas ni columnas adicionales.
 
 ---
+### Despliegue de codigo en una imagen de Docker
+
+## Instrucciones para construir y ejecutar el contenedor Docker
+
+### Paso 1: Construir la imagen Docker
+
+Usa el siguiente comando para construir la imagen Docker basada en el archivo `Dockerfile`:
+
+```sh
+docker build -t nombre-de-tu-imagen .
+
+### Una vez que la imagen Docker esté construida, puedes ejecutar el contenedor con el siguiente comando:
+
+docker run -p 8443:8443 nombre-de-tu-imagen
+
+## Notas adicionales
+Asegúrate de tener los archivos cert.key y cert.pem en el directorio de trabajo para que uvicorn pueda usar SSL.
+Puedes cambiar nombre-de-tu-imagen por el nombre que prefieras para tu imagen Docker.
 
 ## Frontend
 ### Requisitos
@@ -333,7 +351,8 @@ No tiene referencias a otras tablas ni columnas adicionales.
 - TypeScript
 - TailwindCSS
 - React Router
-  
+- sobre el archivo package.json se tienen todos los paquetes necesarios para instalar
+
 ### Instalación
 1. Navegar a la carpeta `Frontend`.
 2. Instalar dependencias:
@@ -354,6 +373,12 @@ No tiene referencias a otras tablas ni columnas adicionales.
 ### Páginas
 - `LoginPage`: Inicio de sesión.
 - `CreatePostPage`: Creación de publicaciones.
+- `EditPublishedPostPage`: Editar las publicaciones ya publicas
+- `HomePage`: Pagina principal donde aparecen las publicaciones
+- `PostPage`: Revisar en zoom cada post
+- `RegisterPage`: Pagina de registro de un nuevo usuario
+- `RequestPasswordResetPage`: Solicitar el reseteo de contrasena
+- `ResetPasswordPage`: Realizar el reseteo de contrasena
 - `EditPostPage`: Edición de publicaciones.
 - `CreateTagPage`: Creación de etiquetas.
 - `MyPostsPage`: Listado de publicaciones propias.
@@ -362,6 +387,23 @@ No tiene referencias a otras tablas ni columnas adicionales.
 El contexto de autenticación se maneja con **AuthContext** usando **React Context API**.
 
 ![POCBlog](./Frontend/POCBlog.png)
+
+## Instrucciones para construir y ejecutar el contenedor Docker
+
+### Paso 1: Construir la imagen Docker
+
+Usa el siguiente comando para construir la imagen Docker basada en el archivo `Dockerfile`:
+
+```sh
+docker build -t nombre-de-tu-imagen .
+
+### Una vez que la imagen Docker esté construida, puedes ejecutar el contenedor con el siguiente comando:
+
+docker run -p 80:80 nombre-de-tu-imagen
+
+## Notas adicionales
+Asegúrate de tener los archivos cert.key y cert.pem en el directorio de trabajo para que Nginx pueda usar SSL.
+Puedes cambiar nombre-de-tu-imagen por el nombre que prefieras para tu imagen Docker.
 
 ---
 
