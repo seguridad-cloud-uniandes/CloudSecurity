@@ -335,10 +335,13 @@ Usa el siguiente comando para construir la imagen Docker basada en el archivo `D
 
 ```sh
 docker build -t nombre-de-tu-imagen .
+```
 
 ### Una vez que la imagen Docker esté construida, puedes ejecutar el contenedor con el siguiente comando:
 
+```
 docker run -p 8443:8443 nombre-de-tu-imagen
+```
 
 ## Notas adicionales
 Asegúrate de tener los archivos cert.key y cert.pem en el directorio de trabajo para que uvicorn pueda usar SSL.
@@ -396,10 +399,13 @@ Usa el siguiente comando para construir la imagen Docker basada en el archivo `D
 
 ```sh
 docker build -t nombre-de-tu-imagen .
+```
 
 ### Una vez que la imagen Docker esté construida, puedes ejecutar el contenedor con el siguiente comando:
 
+```
 docker run -p 80:80 nombre-de-tu-imagen
+```
 
 ## Notas adicionales
 Asegúrate de tener los archivos cert.key y cert.pem en el directorio de trabajo para que Nginx pueda usar SSL.
